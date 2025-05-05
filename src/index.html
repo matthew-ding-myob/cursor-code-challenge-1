@@ -152,6 +152,41 @@
             }
         }
 
+        let points = 0; // Initialize points tally
+
+        function drawPoints() {
+            ctx.font = '24px Arial';
+            ctx.fillStyle = 'black';
+            ctx.fillText(`Coins: ${points}`, canvas.width - 150, 50);
+        }
+
+        function detectCoinCollision() {
+            backgroundInstances.forEach((instance) => {
+                instance.coinPositions = instance.coinPositions.filter((x) => {
+                    const coinY = canvas.height / 3;
+                    const coinWidth = coinImage.width * 0.4;
+                    const coinHeight = coinImage.height * 0.4;
+
+                    const cassowaryWidth = cassowaryImage.width;
+                    const cassowaryHeight = cassowaryImage.height;
+                    const cassowaryX = (canvas.width / 3 - cassowaryWidth) / 2;
+
+                    const isColliding =
+                        cassowaryX < x + coinWidth &&
+                        cassowaryX + cassowaryWidth > x &&
+                        cassowaryY < coinY + coinHeight &&
+                        cassowaryY + cassowaryHeight > coinY;
+
+                    if (isColliding) {
+                        points += 1; // Increment points tally
+                        return false; // Remove coin from positions
+                    }
+
+                    return true; // Keep coin if no collision
+                });
+            });
+        }
+
         backgroundImage.onload = () => {
             cassowaryImage.onload = () => {
                 initializeBackgroundInstances();
@@ -163,6 +198,9 @@
                     drawBackground();
                     updateBackground(2);
 
+                    // Detect collisions with coins
+                    detectCoinCollision();
+
                     // Update cassowary position
                     updateCassowaryPosition();
 
@@ -171,6 +209,9 @@
                     const cassowaryHeight = cassowaryImage.height;
                     const cassowaryX = (canvas.width / 3 - cassowaryWidth) / 2;
                     ctx.drawImage(cassowaryImage, cassowaryX, cassowaryY, cassowaryWidth, cassowaryHeight);
+
+                    // Draw points tally
+                    drawPoints();
 
                     requestAnimationFrame(draw);
                 }
