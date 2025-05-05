@@ -41,25 +41,29 @@
         let jumpVelocity = 0;
         const gravity = 0.5 / 2.1; // Reduce gravity to increase jump duration
         const maxJumpHeight = (canvas.height - cassowaryImage.height * 0.8) / 2 - 100;
+        let jumpCount = 0; // Track the number of jumps
 
         document.addEventListener('keydown', (event) => {
-            if (event.code === 'Space' && !isJumping) {
-            isJumping = true;
-            jumpVelocity = -15 * 1.3; // Keep initial jump velocity the same
+            if (event.code === 'Space') {
+                if (jumpCount < 2) { // Allow up to two jumps
+                    isJumping = true;
+                    jumpVelocity = jumpCount === 0 ? -15 * 1.3 : -15 * 0.65; // Second jump lasts half the duration
+                    jumpCount++;
+                }
             }
         });
 
         function updateCassowaryPosition() {
             if (isJumping) {
-            cassowaryY += jumpVelocity;
-            jumpVelocity += gravity;
+                cassowaryY += jumpVelocity;
+                jumpVelocity += gravity;
 
-            // Stop jumping when cassowary returns to original position
-            const originalY = (canvas.height - cassowaryImage.height * 0.8) / 2;
-            if (cassowaryY >= originalY) {
-                cassowaryY = originalY;
-                isJumping = false;
-            }
+                const originalY = (canvas.height - cassowaryImage.height * 0.8) / 2;
+                if (cassowaryY >= originalY) {
+                    cassowaryY = originalY;
+                    isJumping = false;
+                    jumpCount = 0; // Reset jump count when cassowary lands
+                }
             }
         }
 
