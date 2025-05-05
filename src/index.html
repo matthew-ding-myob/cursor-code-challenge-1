@@ -33,6 +33,32 @@
         let x1 = 0;
         let x2;
 
+        let cassowaryY = (canvas.height - cassowaryImage.height * 0.8) / 2;
+        let isJumping = false;
+        let jumpVelocity = 0;
+        const gravity = 0.5;
+
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space' && !isJumping) {
+                isJumping = true;
+                jumpVelocity = -10; // Initial jump velocity
+            }
+        });
+
+        function updateCassowaryPosition() {
+            if (isJumping) {
+                cassowaryY += jumpVelocity;
+                jumpVelocity += gravity;
+
+                // Stop jumping when cassowary returns to original position
+                const originalY = (canvas.height - cassowaryImage.height * 0.8) / 2;
+                if (cassowaryY >= originalY) {
+                    cassowaryY = originalY;
+                    isJumping = false;
+                }
+            }
+        }
+
         backgroundImage.onload = () => {
             x2 = backgroundImage.width * 2.5;
 
@@ -44,11 +70,13 @@
                     ctx.drawImage(backgroundImage, x1, 0, backgroundImage.width * 2.5, backgroundImage.height * 1.5);
                     ctx.drawImage(backgroundImage, x2, 0, backgroundImage.width * 2.5, backgroundImage.height * 1.5);
 
+                    // Update cassowary position
+                    updateCassowaryPosition();
+
                     // Draw the cassowary image in the middle of the left third of the screen with reduced size
                     const cassowaryWidth = cassowaryImage.width * 0.8;
                     const cassowaryHeight = cassowaryImage.height * 0.8;
                     const cassowaryX = (canvas.width / 3 - cassowaryWidth) / 2;
-                    const cassowaryY = (canvas.height - cassowaryHeight) / 2;
                     ctx.drawImage(cassowaryImage, cassowaryX, cassowaryY, cassowaryWidth, cassowaryHeight);
 
                     // Update positions for the background
