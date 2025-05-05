@@ -98,8 +98,8 @@
 
             drawSeagulls() {
                 this.seagullPositions.forEach((x) => {
-                    const seagullY = (canvas.height - seagullImage.height * 0.25) / 2; // Fixed y position for seagulls
-                    ctx.drawImage(seagullImage, x, seagullY, seagullImage.width * 0.25, seagullImage.height * 0.25); // Scale seagulls to 0.25x
+                    const seagullY = (canvas.height - seagullImage.height * 0.2) / 2; // Adjusted scale to 0.2x
+                    ctx.drawImage(seagullImage, x, seagullY, seagullImage.width * 0.2, seagullImage.height * 0.2); // Scale seagulls to 0.2x
                 });
             }
 
