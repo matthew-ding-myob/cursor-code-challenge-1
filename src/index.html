@@ -30,13 +30,14 @@
         const cassowaryImage = new Image();
         cassowaryImage.src = '../assets/cassowary.png';
 
-        let x1 = 0;
-        let x2;
+        const coinImage = new Image();
+        coinImage.src = '../assets/coin.png';
 
         let cassowaryY = (canvas.height - cassowaryImage.height * 0.8) / 2;
         let isJumping = false;
         let jumpVelocity = 0;
         const gravity = 0.5;
+        const maxJumpHeight = (canvas.height - cassowaryImage.height * 0.8) / 2 - 100;
 
         document.addEventListener('keydown', (event) => {
             if (event.code === 'Space' && !isJumping) {
@@ -59,37 +60,86 @@
             }
         }
 
-        backgroundImage.onload = () => {
-            x2 = backgroundImage.width * 2.5;
+        class BackgroundInstance {
+            constructor(x) {
+                this.x = x;
+                this.coinPositions = this.generateRandomCoinPositions();
+            }
 
+            generateRandomCoinPositions() {
+                const positions = [];
+                let lastX = this.x;
+                const maxDistance = backgroundImage.width * 2.5 / 5; // Spread coins evenly across the background
+
+                for (let i = 0; i < 5; i++) {
+                    lastX += Math.random() * (maxDistance - coinImage.width * 0.5) + coinImage.width * 0.5 + 50; // Ensure spacing and no overlap
+                    positions.push(lastX);
+                }
+
+                return positions;
+            }
+
+            drawCoins() {
+                this.coinPositions.forEach((x) => {
+                    const coinY = maxJumpHeight - 20; // Move coins slightly upwards
+                    ctx.drawImage(coinImage, x, coinY, coinImage.width * 0.4, coinImage.height * 0.4); // Scale coins to 0.4x (0.8x smaller)
+                });
+            }
+
+            updatePosition(speed) {
+                this.x -= speed;
+                this.coinPositions = this.coinPositions.map((x) => x - speed);
+            }
+        }
+
+        let backgroundInstances = [];
+
+        function initializeBackgroundInstances() {
+            backgroundInstances = [
+                new BackgroundInstance(0),
+                new BackgroundInstance(backgroundImage.width * 2.5)
+            ];
+        }
+
+        function drawBackground() {
+            backgroundInstances.forEach((instance) => {
+                ctx.drawImage(backgroundImage, instance.x, 0, backgroundImage.width * 2.5, backgroundImage.height * 1.5);
+                instance.drawCoins();
+            });
+        }
+
+        function updateBackground(speed) {
+            backgroundInstances.forEach((instance) => {
+                instance.updatePosition(speed);
+            });
+
+            // Reset positions and regenerate coins when off-screen
+            if (backgroundInstances[0].x + backgroundImage.width * 2.5 <= 0) {
+                const lastInstance = backgroundInstances[backgroundInstances.length - 1];
+                backgroundInstances.shift();
+                backgroundInstances.push(new BackgroundInstance(lastInstance.x + backgroundImage.width * 2.5));
+            }
+        }
+
+        backgroundImage.onload = () => {
             cassowaryImage.onload = () => {
+                initializeBackgroundInstances();
+
                 function draw() {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                    // Draw the scrolling background
-                    ctx.drawImage(backgroundImage, x1, 0, backgroundImage.width * 2.5, backgroundImage.height * 1.5);
-                    ctx.drawImage(backgroundImage, x2, 0, backgroundImage.width * 2.5, backgroundImage.height * 1.5);
+                    // Draw and update background with coins
+                    drawBackground();
+                    updateBackground(2);
 
                     // Update cassowary position
                     updateCassowaryPosition();
 
-                    // Draw the cassowary image in the middle of the left third of the screen with reduced size
-                    const cassowaryWidth = cassowaryImage.width * 0.8;
-                    const cassowaryHeight = cassowaryImage.height * 0.8;
+                    // Draw the cassowary image
+                    const cassowaryWidth = cassowaryImage.width;
+                    const cassowaryHeight = cassowaryImage.height;
                     const cassowaryX = (canvas.width / 3 - cassowaryWidth) / 2;
                     ctx.drawImage(cassowaryImage, cassowaryX, cassowaryY, cassowaryWidth, cassowaryHeight);
-
-                    // Update positions for the background
-                    x1 -= 2;
-                    x2 -= 2;
-
-                    // Reset positions when off-screen
-                    if (x1 + backgroundImage.width * 2.5 <= 0) {
-                        x1 = x2 + backgroundImage.width * 2.5;
-                    }
-                    if (x2 + backgroundImage.width * 2.5 <= 0) {
-                        x2 = x1 + backgroundImage.width * 2.5;
-                    }
 
                     requestAnimationFrame(draw);
                 }
