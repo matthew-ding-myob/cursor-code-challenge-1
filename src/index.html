@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrolling Background</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="backgroundCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('backgroundCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size to fill the window
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const backgroundImage = new Image();
+        backgroundImage.src = '../assets/city_background.png';
+
+        let x1 = 0;
+        let x2;
+
+        backgroundImage.onload = () => {
+            x2 = backgroundImage.width * 2.5;
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Draw the two images with 2.5 times the width and 1.5 times the height
+                ctx.drawImage(backgroundImage, x1, 0, backgroundImage.width * 2.5, backgroundImage.height * 1.5);
+                ctx.drawImage(backgroundImage, x2, 0, backgroundImage.width * 2.5, backgroundImage.height * 1.5);
+
+                // Update positions
+                x1 -= 2;
+                x2 -= 2;
+
+                // Reset positions when off-screen
+                if (x1 + backgroundImage.width * 2.5 <= 0) {
+                    x1 = x2 + backgroundImage.width * 2.5;
+                }
+                if (x2 + backgroundImage.width * 2.5 <= 0) {
+                    x2 = x1 + backgroundImage.width * 2.5;
+                }
+
+                requestAnimationFrame(draw);
+            }
+
+            draw();
+        };
+
+        // Adjust canvas size on window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
