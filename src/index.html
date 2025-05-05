@@ -53,6 +53,13 @@
             }
         });
 
+        document.addEventListener('keydown', (event) => {
+            if (gameOver && event.code === 'Space') {
+                points = 0; // Reset the coin counter
+                location.reload(); // Reload the page to restart the game
+            }
+        });
+
         function updateCassowaryPosition() {
             if (isJumping) {
                 cassowaryY += jumpVelocity;
@@ -159,6 +166,7 @@
         }
 
         let points = 0; // Initialize points tally
+        let gameOver = false; // Track game over state
 
         function drawPoints() {
             ctx.font = '24px Arial';
@@ -193,11 +201,47 @@
             });
         }
 
+        function detectSeagullCollision() {
+            backgroundInstances.forEach((instance) => {
+                instance.seagullPositions.forEach((x) => {
+                    const seagullY = (canvas.height - seagullImage.height * 0.2) / 2 + 100;
+                    const seagullWidth = seagullImage.width * 0.2;
+                    const seagullHeight = seagullImage.height * 0.2;
+
+                    const cassowaryWidth = cassowaryImage.width;
+                    const cassowaryHeight = cassowaryImage.height;
+                    const cassowaryX = (canvas.width / 3 - cassowaryWidth) / 2;
+
+                    const isColliding =
+                        cassowaryX < x + seagullWidth &&
+                        cassowaryX + cassowaryWidth > x &&
+                        cassowaryY < seagullY + seagullHeight &&
+                        cassowaryY + cassowaryHeight > seagullY;
+
+                    if (isColliding) {
+                        gameOver = true; // Set game over state
+                    }
+                });
+            });
+        }
+
+        function drawGameOver() {
+            ctx.font = '48px Arial';
+            ctx.fillStyle = 'red';
+            ctx.textAlign = 'center';
+            ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
+        }
+
         backgroundImage.onload = () => {
             cassowaryImage.onload = () => {
                 initializeBackgroundInstances();
 
                 function draw() {
+                    if (gameOver) {
+                        drawGameOver();
+                        return; // Stop rendering
+                    }
+
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                     // Draw and update background with coins
@@ -206,6 +250,9 @@
 
                     // Detect collisions with coins
                     detectCoinCollision();
+
+                    // Detect collisions with seagulls
+                    detectSeagullCollision();
 
                     // Update cassowary position
                     updateCassowaryPosition();
