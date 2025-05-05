@@ -85,21 +85,20 @@
 
             generateRandomSeagullPositions() {
                 const positions = [];
-                let lastX = this.x;
-                const maxDistance = backgroundImage.width * 2.5 / 3; // Spread seagulls evenly across the background
+                const thirdWidth = backgroundImage.width * 2.5 / 3; // Divide background into thirds
 
-                for (let i = 0; i < 3; i++) {
-                    lastX += Math.random() * (maxDistance - seagullImage.width * 0.25) + seagullImage.width * 0.25 + 50; // Ensure spacing and no overlap
-                    positions.push(lastX);
-                }
+                // Place one seagull in each third
+                positions.push(this.x + Math.random() * (thirdWidth - seagullImage.width * 0.25));
+                positions.push(this.x + thirdWidth + Math.random() * (thirdWidth - seagullImage.width * 0.25));
+                positions.push(this.x + 2 * thirdWidth + Math.random() * (thirdWidth - seagullImage.width * 0.25));
 
                 return positions;
             }
 
             drawSeagulls() {
                 this.seagullPositions.forEach((x) => {
-                    const seagullY = (canvas.height - seagullImage.height * 0.2) / 2; // Adjusted scale to 0.2x
-                    ctx.drawImage(seagullImage, x, seagullY, seagullImage.width * 0.2, seagullImage.height * 0.2); // Scale seagulls to 0.2x
+                    const seagullY = (canvas.height - seagullImage.height * 0.2) / 2 + 50; // Move seagulls down by 30 more pixels
+                    ctx.drawImage(seagullImage, x, seagullY, seagullImage.width * 0.2, seagullImage.height * 0.2);
                 });
             }
 
