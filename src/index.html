@@ -167,6 +167,8 @@
 
         let points = 0; // Initialize points tally
         let gameOver = false; // Track game over state
+        let invincibilityTimer = 2000; // 2 seconds of invincibility
+        let gameStartTime = Date.now();
 
         function drawPoints() {
             ctx.font = '24px Arial';
@@ -202,6 +204,11 @@
         }
 
         function detectSeagullCollision() {
+            // Check if the cassowary is still invincible
+            if (Date.now() - gameStartTime < invincibilityTimer) {
+                return;
+            }
+
             backgroundInstances.forEach((instance) => {
                 instance.seagullPositions.forEach((x) => {
                     const seagullY = (canvas.height - seagullImage.height * 0.2) / 2 + 100;
