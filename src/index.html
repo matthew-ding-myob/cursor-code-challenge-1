@@ -87,8 +87,10 @@
                 const positions = [];
                 const thirdWidth = backgroundImage.width * 2.5 / 3; // Divide background into thirds
 
-                // Place one seagull in each third
-                positions.push(this.x + Math.random() * (thirdWidth - seagullImage.width * 0.25));
+                // Ensure the first seagull is at least one seagull's width from the left edge
+                positions.push(this.x + seagullImage.width * 0.25 + Math.random() * (thirdWidth - seagullImage.width * 0.25));
+
+                // Place one seagull in each remaining third
                 positions.push(this.x + thirdWidth + Math.random() * (thirdWidth - seagullImage.width * 0.25));
                 positions.push(this.x + 2 * thirdWidth + Math.random() * (thirdWidth - seagullImage.width * 0.25));
 
