@@ -104,7 +104,7 @@
 
             drawCoins() {
                 this.coinPositions.forEach((x) => {
-                    const coinY = maxJumpHeight - 20; // Move coins slightly upwards
+                    const coinY = canvas.height / 3; // Hardcoded value to keep coins at a consistent position
                     ctx.drawImage(coinImage, x, coinY, coinImage.width * 0.4, coinImage.height * 0.4); // Scale coins to 0.4x (0.8x smaller)
                 });
             }
