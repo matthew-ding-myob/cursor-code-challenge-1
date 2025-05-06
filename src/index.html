@@ -151,6 +151,8 @@
             });
         }
 
+        let baseSpeed = 2; // Base speed of the background
+
         function updateBackground(speed) {
             speed *= 1.5; // Increase speed by 1.5x
             backgroundInstances.forEach((instance) => {
@@ -163,6 +165,10 @@
                 backgroundInstances.shift();
                 backgroundInstances.push(new BackgroundInstance(lastInstance.x + backgroundImage.width * 2.5));
             }
+        }
+
+        function adjustSpeed() {
+            baseSpeed = 2 * Math.pow(1.2, Math.floor(points / 5)); // Increase speed by 1.2x for every 5 coins
         }
 
         let points = 0; // Initialize points tally
@@ -258,9 +264,12 @@
 
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+                    // Adjust speed based on points
+                    adjustSpeed();
+
                     // Draw and update background with coins
                     drawBackground();
-                    updateBackground(2);
+                    updateBackground(baseSpeed);
 
                     // Detect collisions with coins
                     detectCoinCollision();
